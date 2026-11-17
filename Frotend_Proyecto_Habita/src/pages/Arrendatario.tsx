@@ -5,6 +5,21 @@ import { CatalogInitialFilters, CatalogSortOrder, NavigateFn, Property } from '.
 const FALLBACK_IMAGE_URL =
   'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=480&fit=crop&auto=format'
 
+function resolvePropertyImageUrl(rawUrl: string | null | undefined): string {
+  if (!rawUrl || !rawUrl.trim()) return FALLBACK_IMAGE_URL
+  return rawUrl
+    .trim()
+    .replace(
+      'https://www-img-cc.s3.amazonaws.com/',
+      'https://www.ciencuadras.com/'
+    )
+    .replace(
+      'http://www-img-cc.s3.amazonaws.com/',
+      'https://www.ciencuadras.com/'
+    )
+    .replace(/^http:\/\//i, 'https://')
+}
+
 const formatCOP = (n: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -257,7 +272,9 @@ export default function Arrendatario({ navigate, initialFilters }: ArrendatarioP
                 >
                   <div className="relative h-48 bg-gray-100 overflow-hidden">
                     <img
-                      src={prop.imagen_url || FALLBACK_IMAGE_URL}
+                      src={resolvePropertyImageUrl(prop.imagen_url)}
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
                       onError={e => {
                         e.currentTarget.src = FALLBACK_IMAGE_URL
                       }}
@@ -361,7 +378,8 @@ export default function Arrendatario({ navigate, initialFilters }: ArrendatarioP
           >
             <div className="relative h-64 bg-gray-100 overflow-hidden rounded-t-2xl">
               <img
-                src={selected.imagen_url || FALLBACK_IMAGE_URL}
+                src={resolvePropertyImageUrl(selected.imagen_url)}
+                referrerPolicy="no-referrer"
                 onError={e => {
                   e.currentTarget.src = FALLBACK_IMAGE_URL
                 }}
